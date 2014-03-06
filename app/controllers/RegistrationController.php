@@ -1,7 +1,7 @@
 <?php
 
 class RegistrationController extends BaseController {
-    protected $layout = "layouts.main";
+   
     
     public function __construct() {
        // $this->beforeFilter('csrf', array('on'=>'post'));
@@ -70,7 +70,7 @@ class RegistrationController extends BaseController {
         Session::forget('loggedinUser.username');
         
         Auth::logout();
-        return Redirect::to('users/login')->with('message', 'Your are now logged out!');
+        return Redirect::to('/')->with('message', 'Your are now logged out!');
     }
     
     public function getId($id = null){

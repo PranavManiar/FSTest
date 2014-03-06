@@ -104,6 +104,7 @@
 						}).done(function( data ) {
 							
 							loginFormDialog.dialog( "close" );
+							location.reload();
 						});
 					},
 					Cancel: function() {
@@ -118,33 +119,49 @@
 				modal: true,
 				 buttons: {
 					"Broadcast Message": function() {
-						 $.ajax({
-							type: "POST",
-							url: "message/broadcast",
-							data: $( "#messageForm" ).serialize(),
-							statusCode: {
-								403: function() {
-									alert( "Access denied!! Please sign up" );
-								},
-								500: function() {
-									alert( "Internal Server Error" );
-								},
-								400:function(data){
-									//console.log(data);
-									//console.log(data.responseText);
-									//interate through data and append it to the list
-									
-									$("#loginError").append("<li>" + data.responseText + "</li>");					
+					
+						//Check if message is not null & does not have more than 200 characters
+						if($.trim($('#message').val()).length <= 0){
+							alert('Please enter message');
+						
+						}else{
+						
+							 $.ajax({
+								type: "POST",
+								url: "message/broadcast",
+								data: $( "#messageForm" ).serialize(),
+								statusCode: {
+									403: function() {
+											//alert( "Access denied!! Please sign up" );
+											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+									},
+									500: function() {
+										alert( "Internal Server Error" );
+									},
+									400:function(data){
+										//console.log(data);
+										//console.log(data.responseText);
+										//interate through data and append it to the list
+										
+										$("#loginError").append("<li>" + data.responseText + "</li>");					
+									}
 								}
-							}
-						}).done(function( data ) {
-							alert('Successfully submitted the message');
-							messageBroadcastDialog.dialog( "close" );
-						});
+							}).done(function( data ) {
+							
+								
+							
+								//alert('Successfully submitted the message');
+								messageBroadcastDialog.dialog( "close" );
+								//To-Do :: Show newly broadcasted message in the feed or reload the feed
+								
+							});
+						}
 					},
 					Cancel: function() {
 						$( this ).dialog( "close" );
 					}
+					
+					
 				}			
 			});
 			
@@ -160,21 +177,7 @@
 		
 		function showMsgBroadcast(){
 			$( "#msgBroadcast" ).dialog( "open" );
-		}
-	
-                function logOutUser(){
-                     $.ajax({
-                                        type: "GET",
-                                        url: "register/logout"
-                                        
-                                }).done(function() {
-                             //       alert("User is now logged out");
-                                        //loginFormDialog.dialog( "close" );
-                                });
-                                
-                                
-                }
-        
+		}        
 	</script>
 	
 </head>
@@ -189,7 +192,7 @@
 					 <span class="sr-only">Toggle navigation</span>
 					 <span class="icon-bar"></span>
 					 <span class="icon-bar">
-					 </span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">The Resistence</a>
+					 </span><span class="icon-bar"></span></button> <a class="navbar-brand" style="font-size:x-large" href="#"><strong>The Resistence</strong></a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -199,7 +202,8 @@
                       @if(Session::has('loggedinUser.email'))   
                       
                       <li>
-                          <span> {{{Session::get('loggedinUser.username') }}}</span>
+					  
+                          <a style="margin-right:5px;"> {{{Session::get('loggedinUser.username') }}}</a>
                           
                         </li>
 
@@ -223,31 +227,31 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-2 column">
-			<ul class="nav nav-pills nav-stacked">
-				<li class="active">
+			<ul class="nav nav-pills nav-stacked side-menu">
+				<li class="side-menu-item">
 						<a href="#" onclick="showMsgBroadcast();">Broadcast Message</a>
 				</li>
-				<li>
+				<li class="side-menu-item">
 					
 						<a href="#" >Saved Message</a>
 					
 				</li>
-				<li>
-					
-						<a href="#" onclick="logOutUser();" >Logout</a>
-					
+				@if(Session::has('loggedinUser.email'))
+				<li class="side-menu-item">
+						<a href="register/logout"  >Logout</a>
 				</li>
+				@endif
 			</ul>	
 		</div>
 		<div class="col-md-10 column">
 			<div class="row clearfix">
-				<div class="col-md-2 column">
-					<img class="img-thumbnail img-message"" alt="140x140" src="http://lorempixel.com/140/140/"  style="width:100px;height:100px;">
-					<a id="modal-99092" href="#modal-container-99092" role="button" class="btn" data-toggle="modal">Launch demo modal</a>
+				<div class="col-md-2 column" >
+					<img class="img-thumbnail img-message message-wrapper" alt="140x140" src="image/defaultprofile.jpg"  style="width:100px;height:100px;">
+					
 				</div>
-				<div class="col-md-10 column">
+				<div class="col-md-10 column message-wrapper" >
 					<div class="row clearfix">
-						<div class="col-md-12 column">
+						<div class="col-md-12 column message-header">
 							<div class="row clearfix">
 								<div class="col-md-8 column">
 									 <a href="#" >
@@ -262,7 +266,7 @@
 						</div>
 					</div>
 					<div class="row clearfix">
-						<div class="col-md-12 column">
+						<div class="col-md-12 column message-text" >
 							<span>
 								Sample text that is created for the testing purpose this text should be just above 200 characters to check that the div with the characters that takes more space how wil it look and what will happen in that case!!!
 							</span>
@@ -291,41 +295,48 @@
 				</div>
 			</div>
 			<div class="row clearfix">
-				<div class="col-md-2 column">
+				<div class="col-md-3 column">
 				</div>
-				<div class="col-md-2 column">
-					<img class="img-thumbnail img-comment" alt="140x140" src="http://lorempixel.com/140/140/" >
-				</div>
-				<div class="col-md-8 column">
-					<div class="row clearfix">
-						<div class="col-md-12 column">
-							<div class="row clearfix">
-								<div class="col-md-9 column">
-								<a href="#" >
-										Will </a>
-								<span >02 December 3014 at 12:02 a.m</span>
-								</div>
-								<div class="col-md-3 column">
-								
+				<div class="col-md-9 column message-wrapper">
+				
+				<div class="row clearfix">
+					<div class="col-md-2 column ">
+						<img class="img-thumbnail img-comment" alt="140x140" src="image/defaultprofile.jpg" >
+					</div>
+					<div class="col-md-10 column">
+						<div class="row clearfix">
+							<div class="col-md-12 column">
+								<div class="row clearfix">
+									<div class="col-md-9 column message-header">
+									<a href="#" class="comment-username">
+											Will </a>
+									<span >02 December 3014 at 12:02 a.m</span>
+									</div>
+									<div class="col-md-3 column">
+									
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="row clearfix">
-						<div class="col-md-12 column">
-							<span>
-								Sample text that is created for the testing purpose this text should be just above 200 characters to check that the div with the characters that takes more space how wil it look and what will happen in that case!!!
-							</span>
+						<div class="row clearfix">
+							<div class="col-md-12 column message-text">
+								<span>
+									Sample text that is created for the testing purpose this text should be just above 200 characters to check that the div with the characters that takes more space how wil it look and what will happen in that case!!!
+								</span>
+							</div>
 						</div>
 					</div>
+					
 				</div>
+				</div>
+				
 			</div>
 		</div>
 	</div>
 </div>
 
 <div id="signUpForm" class="container" title="Sign Up Form">
-	<ul id="registrationError">
+	<ul id="registrationError" class="btn-danger">
 		
 	</ul>
 	<form action="/" id="registrationForm">
@@ -339,7 +350,7 @@
 
 
 <div id="loginForm" class="container" title="Login Form">
-	<ul id="loginError">
+	<ul id="loginError" class="btn-danger">
 	</ul>
 	<form action="/" id="loginPostForm">
 		<input class="form-control" placeholder="Email Address" name="email" type="text">   
@@ -349,8 +360,12 @@
 </div>
 
 <div id="msgBroadcast" class="container" title="Broadcast Message">
+	<ul id="broadcastError" class="btn-danger">
+	
+	</ul>
+	
 	<form action="/" id="messageForm">
-		<textarea class="form-control"  name="message"  rows="5" cols="100"></textarea>       
+		<textarea class="form-control" id="message" name="message"  rows="5" cols="100" maxlength="200"></textarea>       
 	</form>
 </div>
 

@@ -13,27 +13,9 @@
 
 Route::get('/', function()
 {
-	return View::make('hello');
-});
-
-
-Route::get('/resistence', function()
-{
 	return View::make('resistence');
 });
-//
-//Route::get('users', function()
-//{
-//    $users = User::all();
-//
-//    return View::make('users')->with('users', $users);
-//});
-
-//Route::get('usersC', 'UserController@getIndex');
-
-Route::controller('users', 'UserController');
 
 
 Route::controller('register', 'RegistrationController');
-
 Route::controller('message', 'MessageController');

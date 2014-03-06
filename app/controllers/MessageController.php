@@ -4,32 +4,39 @@ class MessageController extends BaseController {
 
     
     public function __construct() {
-
+          //   $this->beforeFilter('auth', array('only'=>array('postBroadcast')));
     }
     
 
     
     public function postBroadcast() {
         
-        $user = Auth::user();
-        $message = new Message;
-        $message->message = Input::get('message');
-        $message->user()->associate($user);
-        $message->save();
-         
-        return "Successfull";
+        if(Auth::check()){
+            
+            $user = Auth::user();
+            $message = new Message;
+            $message->message = Input::get('message');
+            $message->user()->associate($user);
+            $message->save();
+
+            return "Successfull";
+        }else{
+            return Response::make("Please sign in to the application", 403);
+        }
     }
     
         
-    public function getBroadcast() {
+    public function getAllbroadcast() {
         
         $user = Auth::user();
-        $message = new Message;
-        $message->message = "message";
-       $message->user()->associate($user);
-       $message->save();
+//        $message = new Message;
+//        $message->message = "message";
+//       $message->user()->associate($user);
+//       $message->save();
          
-        return "Successfull";
+        $messages = Message::all();
+        
+        return $messages;
     }
     
     
