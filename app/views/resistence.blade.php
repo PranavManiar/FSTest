@@ -234,6 +234,8 @@
 		
 			var commentinputid = "#addcommentinput-"+id;
 			var commentdivid="#addcomment-"+id;
+			
+			var commendwrapperid = "#commentdiv-"+id;
 			var commentText = $(commentinputid).val();
 			
 			
@@ -261,6 +263,15 @@
 							}).done(function( data ) {
 			//					alert('Comment Saved successfully');
 								$(commentdivid).hide();
+								//$(commendwrapperid).append('<div>Newly Added comment will be visible here...</div>')
+								$(commendwrapperid).append('<div class="row clearfix" >	<div class="col-md-3 column"></div>	<div class="col-md-9 column message-wrapper">\
+<div class="row clearfix" > 	<div class="col-md-2 column "> 	<img class="img-thumbnail img-comment" alt="140x140" src="image/defaultprofile.jpg" > \
+</div> 			<div class="col-md-10 column"> 					<div class="row clearfix"> 					<div class="col-md-12 column"> \
+		<div class="row clearfix"> 			<div class="col-md-9 column message-header"> 		<a href="#" class="comment-username"> '+data.user.username +'</a> \
+			<span >'+data.created_at+'</span> 		</div> 				<div class="col-md-3 column">  	</div> 	</div>			</div>		</div>\
+	<div class="row clearfix">					<div class="col-md-12 column message-text">					<span>		'+commentText+'			</span>\
+	</div> 						</div>					</div>						</div> 		</div> </div>');
+		
 							});
 		}
                 

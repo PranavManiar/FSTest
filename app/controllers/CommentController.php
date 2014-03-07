@@ -30,6 +30,7 @@ class CommentController extends BaseController {
             $comment->message()->associate($message);
             $comment->save();
             
+            return $comment;
         }else{
             return Response::make("Please sign in to the application", 403);
         }
