@@ -22,3 +22,4 @@ Route::get('saved', 'DefaultController@showSavedMesages');
 
 Route::controller('register', 'RegistrationController');
 Route::controller('message', 'MessageController');
+Route::controller('comment', 'CommentController');

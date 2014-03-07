@@ -9,7 +9,7 @@ class DefaultController extends BaseController {
     
     public function defaultHandler(){
         
-        $messages = Message::with('User')->orderBy('created_at','desc')->get();
+        $messages = Message::with('User','Comments','Comments.user')->orderBy('created_at','desc')->get();
         
         return View::make('resistence', array(
             'broadcastMessages' => $messages

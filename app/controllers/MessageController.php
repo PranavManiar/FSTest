@@ -29,7 +29,7 @@ class MessageController extends BaseController {
     public function getAllbroadcast() {
                 
         //$messages = Message::with('User')->get();
-        $messages = Message::with('User','Comments')->get();
+        $messages = Message::with('User','Comments','Comments.user')->get();
         return $messages;
     }
     

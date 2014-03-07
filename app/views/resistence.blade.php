@@ -206,67 +206,121 @@
 			
 		}
 		
-		function addComment(messageid){
-			//alert('Add comment called with message id' + messageid);
+		function showComment(id){
+			var commentdivid="#addcomment-"+id;
+			$(commentdivid).show();
+		}
+		
+		function toggleComment(id){
+			var commentdivid = "#commentdiv-"+id;
+			var showhidetext = "#showcommentbtn-"+id;
+			
+			$(commentdivid).toggle();
+			
+			if($(showhidetext).text() == "Show Comments")
+			{
+				$(showhidetext).text("Hide Comments"); 
+			}else{
+				$(showhidetext).text("Show Comments"); 
+			}
+			
+	
+			
+			
+		}
+		
+		function addComment(id){
+		//alert("id"+id);
+		
+			var commentinputid = "#addcommentinput-"+id;
+			var commentdivid="#addcomment-"+id;
+			var commentText = $(commentinputid).val();
+			
+			
+			$.ajax({
+								type: "POST",
+								url: "comment/savecomment",
+								data: {messageid : id,
+								comment:commentText},
+								statusCode: {
+									403: function() {
+											//alert( "Access denied!! Please sign up" );
+											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+									},
+									500: function() {
+										alert( "Internal Server Error" );
+									},
+									400:function(data){
+										//console.log(data);
+										//console.log(data.responseText);
+										//interate through data and append it to the list
+										
+										//$("#loginError").append("<li>" + data.responseText + "</li>");					
+									}
+								}
+							}).done(function( data ) {
+			//					alert('Comment Saved successfully');
+								$(commentdivid).hide();
+							});
 		}
                 
-                function approveMessage(id){
-                    		 $.ajax({
-								type: "POST",
-								url: "message/approvemessage",
-								data: {messageid : id},
-								statusCode: {
-									403: function() {
-											//alert( "Access denied!! Please sign up" );
-											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
-									},
-									500: function() {
-										alert( "Internal Server Error" );
-									},
-									400:function(data){
-										//console.log(data);
-										//console.log(data.responseText);
-										//interate through data and append it to the list
-										
-										//$("#loginError").append("<li>" + data.responseText + "</li>");					
-									}
-								}
-							}).done(function( data ) {
-								//alert('Message Saved successfully');
+        function approveMessage(id){
+					 $.ajax({
+						type: "POST",
+						url: "message/approvemessage",
+						data: {messageid : id},
+						statusCode: {
+							403: function() {
+									//alert( "Access denied!! Please sign up" );
+									$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+							},
+							500: function() {
+								alert( "Internal Server Error" );
+							},
+							400:function(data){
+								//console.log(data);
+								//console.log(data.responseText);
+								//interate through data and append it to the list
 								
-								var messageapproveid = "#messageapprove-"+id;
-								$(messageapproveid).text(data);
-							});
-		
-                    
-                }
-                function rejectMessage(id){
-                            $.ajax({
-								type: "POST",
-								url: "message/rejectmessage",
-								data: {messageid : id},
-								statusCode: {
-									403: function() {
-											//alert( "Access denied!! Please sign up" );
-											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
-									},
-									500: function() {
-										alert( "Internal Server Error" );
-									},
-									400:function(data){
-										//console.log(data);
-										//console.log(data.responseText);
-										//interate through data and append it to the list
-										
-										//$("#loginError").append("<li>" + data.responseText + "</li>");					
-									}
-								}
-							}).done(function( data ) {
-								//alert('Message Saved successfully');
-								var messagerejectid = "#messagereject-"+id;
-								$(messagerejectid).text(data);
-							});
-                }
+								//$("#loginError").append("<li>" + data.responseText + "</li>");					
+							}
+						}
+					}).done(function( data ) {
+						//alert('Message Saved successfully');
+						
+						var messageapproveid = "#messageapprove-"+id;
+						$(messageapproveid).text(data);
+					});
+
+			
+		}
+		function rejectMessage(id){
+					$.ajax({
+						type: "POST",
+						url: "message/rejectmessage",
+						data: {messageid : id},
+						statusCode: {
+							403: function() {
+									//alert( "Access denied!! Please sign up" );
+									$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+							},
+							500: function() {
+								alert( "Internal Server Error" );
+							},
+							400:function(data){
+								//console.log(data);
+								//console.log(data.responseText);
+								//interate through data and append it to the list
+								
+								//$("#loginError").append("<li>" + data.responseText + "</li>");					
+							}
+						}
+					}).done(function( data ) {
+						//alert('Message Saved successfully');
+						var messagerejectid = "#messagereject-"+id;
+						$(messagerejectid).text(data);
+					});
+		}
 	</script>
 	
 </head>
@@ -397,7 +451,7 @@
 																		
 														@endif
                                                                          
-                                                                         <a href="#" class="btn" type="button">Show Comments</a>
+                                                                         <a id="showcommentbtn-{{{$broadcastMessage->id}}}" href="#" class="btn" type="button" onclick="toggleComment({{{$broadcastMessage->id}}});">Show Comments</a>
 								</div>
 								<div class="col-md-1 column">
 									
@@ -408,7 +462,7 @@
 								<div class="col-md-4 column">
                                                                     
                                                                 @if(Session::has('loggedinUser.email'))
-								<a href="#" class="btn" type="button" onclick="addComment( {{{$broadcastMessage->id}}} ); " >Add Comment</a>
+								<a href="#" class="btn" type="button" onclick="showComment( {{{$broadcastMessage->id}}} ); " >Add Comment</a>
                                                                 
                                                                 
                                                                 @if (isset($hideSaveMessage))
@@ -422,6 +476,66 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			
+			<div id="commentdiv-{{{$broadcastMessage->id}}}" style="display:none;">
+			
+			@foreach ($broadcastMessage->comments as $comment)
+			<div class="row clearfix" >
+				<div class="col-md-3 column">
+				</div>
+				<div class="col-md-9 column message-wrapper">
+				
+				<div class="row clearfix" >
+					<div class="col-md-2 column ">
+						<img class="img-thumbnail img-comment" alt="140x140" src="image/defaultprofile.jpg" >
+					</div>
+					<div class="col-md-10 column">
+						<div class="row clearfix">
+							<div class="col-md-12 column">
+								<div class="row clearfix">
+									<div class="col-md-9 column message-header">
+									<a href="#" class="comment-username">
+											{{{ $comment->user->username}}} </a>
+									<span >{{{$comment->created_at}}}</span>
+									</div>
+									<div class="col-md-3 column">
+									
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row clearfix">
+							<div class="col-md-12 column message-text">
+								<span>
+									{{{$comment->commentText}}}
+								</span>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				</div>
+				
+			</div>
+			
+			
+			@endforeach
+			</div>
+			<div class="row clearfix" id="addcomment-{{{$broadcastMessage->id}}}" style="display:none;padding-bootom:10px;padding-top:5px;">
+				<div class="col-md-3 column">
+				</div>
+				<div class="col-md-9 column ">
+				
+				<div class="row clearfix">
+					<div>
+						
+							<input  style="width:80%;" placeholder="Add Comment" name="comment" type="text" id = "addcommentinput-{{{$broadcastMessage->id}}}">
+							<input type="button" value="Add Comment" onclick="addComment({{{$broadcastMessage->id}}})"></input> 
+						
+					</div>
+				</div>
+				</div>		
 			</div>
 			
 			@endforeach
