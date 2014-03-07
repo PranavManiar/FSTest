@@ -19,13 +19,20 @@ body {
 	float:right;
 }
 
+.img-approval{
+	width:20px;
+	height:20px;
+	
+}
+
+
 .message-wrapper{
 	border:2px solid #a1a1a1;
 	margin-bottom:10px;
 }
 
 .message-wrapper-leader{
-	border:3px solid #1a1a1a;
+	border:3px solid red;
 	margin-bottom:10px;
 }
 

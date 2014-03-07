@@ -200,7 +200,7 @@
 									}
 								}
 							}).done(function( data ) {
-								alert('Message Saved successfully');
+								//alert('Message Saved successfully');
 							});
 			
 			
@@ -209,6 +209,64 @@
 		function addComment(messageid){
 			//alert('Add comment called with message id' + messageid);
 		}
+                
+                function approveMessage(id){
+                    		 $.ajax({
+								type: "POST",
+								url: "message/approvemessage",
+								data: {messageid : id},
+								statusCode: {
+									403: function() {
+											//alert( "Access denied!! Please sign up" );
+											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+									},
+									500: function() {
+										alert( "Internal Server Error" );
+									},
+									400:function(data){
+										//console.log(data);
+										//console.log(data.responseText);
+										//interate through data and append it to the list
+										
+										//$("#loginError").append("<li>" + data.responseText + "</li>");					
+									}
+								}
+							}).done(function( data ) {
+								//alert('Message Saved successfully');
+								
+								var messageapproveid = "#messageapprove-"+id;
+								$(messageapproveid).text(data);
+							});
+		
+                    
+                }
+                function rejectMessage(id){
+                            $.ajax({
+								type: "POST",
+								url: "message/rejectmessage",
+								data: {messageid : id},
+								statusCode: {
+									403: function() {
+											//alert( "Access denied!! Please sign up" );
+											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+									},
+									500: function() {
+										alert( "Internal Server Error" );
+									},
+									400:function(data){
+										//console.log(data);
+										//console.log(data.responseText);
+										//interate through data and append it to the list
+										
+										//$("#loginError").append("<li>" + data.responseText + "</li>");					
+									}
+								}
+							}).done(function( data ) {
+								//alert('Message Saved successfully');
+								var messagerejectid = "#messagereject-"+id;
+								$(messagerejectid).text(data);
+							});
+                }
 	</script>
 	
 </head>
@@ -282,10 +340,23 @@
 			@foreach ($broadcastMessages as $broadcastMessage)
 			<div class="row clearfix">
 				<div class="col-md-2 column" >
-					<img class="img-thumbnail img-message message-wrapper" alt="140x140" src="image/defaultprofile.jpg"  style="width:100px;height:100px;">
+                                    
+                                        @if ($broadcastMessage->user->isleader == 0 )
+                                            <img class="img-thumbnail img-message message-header"
+					alt="140x140" src="image/defaultprofile.jpg"  style="width:100px;height:100px;">
+                                        @else
+						<img class="img-thumbnail img-message message-wrapper-leader"
+					alt="140x140" src="image/defaultprofile.jpg"  style="width:100px;height:100px;">
+                                        @endif
+                                    
+					
 					
 				</div>
+				@if ($broadcastMessage->user->isleader == 0 )
 				<div class="col-md-10 column message-wrapper" >
+				@else
+				<div class="col-md-10 column message-wrapper-leader" >
+				@endif
 					<div class="row clearfix">
 						<div class="col-md-12 column message-header">
 							<div class="row clearfix">
@@ -313,11 +384,18 @@
 							<div class="row clearfix">
 								<div class="col-md-5 column">
 									 
-                                                                        @if ($broadcastMessage->user->isleader != 0 )
-                                                                        
-                                                                       
-                                                                        <a href="#" class="btn" type="button">Like</a> <a href="#" class="btn" type="button">Dislike</a>
-									@endif
+                                                         @if ($broadcastMessage->user->isleader == 0 )
+														 
+																		 <span id="messageapprove-{{{$broadcastMessage->id}}}"> {{{$broadcastMessage->like or '0'}}} </span>
+																		<a href="#">
+                                                                        <img class="img-thumbnail img-approval"alt="approve" src="image/approve.png" onclick="approveMessage({{{$broadcastMessage->id}}})" >
+                                                                       </a>
+                                                                       <span id="messagereject-{{{$broadcastMessage->id}}}"> {{{$broadcastMessage->unlike or '0'}}} </span>
+																	   <a href="#">
+																		<img class="img-thumbnail img-approval"alt="approve" src="image/reject.png"  onclick="rejectMessage({{{$broadcastMessage->id}}})">
+																		</a>
+																		
+														@endif
                                                                          
                                                                          <a href="#" class="btn" type="button">Show Comments</a>
 								</div>
