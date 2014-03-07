@@ -10,6 +10,7 @@ body {
 .img-message{
 	width:100px;
 	height:100px;
+	float:right;
 }
 
 .img-comment{

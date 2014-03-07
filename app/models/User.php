@@ -59,5 +59,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
         
         
+        public function savedmessages(){
+            return $this->belongsToMany('Message','user_saved_messages');
+        }
         
 }

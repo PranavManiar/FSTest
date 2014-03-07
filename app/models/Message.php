@@ -17,4 +17,14 @@ class Message extends Eloquent {
             return $this->belongsTo('User');
         }
         
+        public function comments(){
+            return $this->hasMany('Comment');
+        }
+        
+        public function savedbyusers(){
+            
+            return $this->belongsToMany('User','user_saved_messages');
+        }
+        
+        
 }

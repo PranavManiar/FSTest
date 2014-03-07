@@ -113,7 +113,7 @@
 				}			
 			});
 			
-			$messageBroadcastDialog  = $( "#msgBroadcast" ).dialog({
+			var messageBroadcastDialog  = $( "#msgBroadcast" ).dialog({
 				autoOpen: false,
 				width: 500,
 				modal: true,
@@ -147,13 +147,9 @@
 									}
 								}
 							}).done(function( data ) {
-							
-								
-							
-								//alert('Successfully submitted the message');
+								//alert('Message save successuflly')
 								messageBroadcastDialog.dialog( "close" );
-								//To-Do :: Show newly broadcasted message in the feed or reload the feed
-								
+								location.reload();
 							});
 						}
 					},
@@ -178,6 +174,41 @@
 		function showMsgBroadcast(){
 			$( "#msgBroadcast" ).dialog( "open" );
 		}        
+		
+		function saveMessage(id){
+		
+			//alert('save messsage called for message id ' + id);
+			
+				 $.ajax({
+								type: "POST",
+								url: "message/savemessage",
+								data: {messageid : id},
+								statusCode: {
+									403: function() {
+											//alert( "Access denied!! Please sign up" );
+											$('#broadcastError').append("<li>" + "Please sign in to broadcast message" + "</li>");
+									},
+									500: function() {
+										alert( "Internal Server Error" );
+									},
+									400:function(data){
+										//console.log(data);
+										//console.log(data.responseText);
+										//interate through data and append it to the list
+										
+										//$("#loginError").append("<li>" + data.responseText + "</li>");					
+									}
+								}
+							}).done(function( data ) {
+								alert('Message Saved successfully');
+							});
+			
+			
+		}
+		
+		function addComment(messageid){
+			//alert('Add comment called with message id' + messageid);
+		}
 	</script>
 	
 </head>
@@ -228,15 +259,18 @@
 	<div class="row clearfix">
 		<div class="col-md-2 column">
 			<ul class="nav nav-pills nav-stacked side-menu">
+				
+				@if(Session::has('loggedinUser.email'))
+				
 				<li class="side-menu-item">
 						<a href="#" onclick="showMsgBroadcast();">Broadcast Message</a>
 				</li>
 				<li class="side-menu-item">
 					
-						<a href="#" >Saved Message</a>
+						<a href="saved" >Saved Message</a>
 					
 				</li>
-				@if(Session::has('loggedinUser.email'))
+				
 				<li class="side-menu-item">
 						<a href="register/logout"  >Logout</a>
 				</li>
@@ -244,6 +278,8 @@
 			</ul>	
 		</div>
 		<div class="col-md-10 column">
+			@if (isset($broadcastMessages))
+			@foreach ($broadcastMessages as $broadcastMessage)
 			<div class="row clearfix">
 				<div class="col-md-2 column" >
 					<img class="img-thumbnail img-message message-wrapper" alt="140x140" src="image/defaultprofile.jpg"  style="width:100px;height:100px;">
@@ -255,12 +291,12 @@
 							<div class="row clearfix">
 								<div class="col-md-8 column">
 									 <a href="#" >
-										John Connor </a>
-										<span >Resistence Leader</span>
+										{{{ $broadcastMessage->user->username}}} </a>
+										<span >{{{ $broadcastMessage->user->userrole}}}</span>
 										
 								</div>
 								<div class="col-md-4 column">
-									 <span >02 December 3014 at 12:02 a.m</span>
+									 <span >{{{$broadcastMessage->created_at}}}</span>
 								</div>
 							</div>
 						</div>
@@ -268,7 +304,7 @@
 					<div class="row clearfix">
 						<div class="col-md-12 column message-text" >
 							<span>
-								Sample text that is created for the testing purpose this text should be just above 200 characters to check that the div with the characters that takes more space how wil it look and what will happen in that case!!!
+								{{{$broadcastMessage->message}}}
 							</span>
 						</div>
 					</div>
@@ -276,8 +312,14 @@
 						<div class="col-md-12 column">
 							<div class="row clearfix">
 								<div class="col-md-5 column">
-									 <a href="#" class="btn" type="button">Like</a> <a href="#" class="btn" type="button">Dislike</a>
-									  <a href="#" class="btn" type="button">Hide Comments</a>
+									 
+                                                                        @if ($broadcastMessage->user->isleader != 0 )
+                                                                        
+                                                                       
+                                                                        <a href="#" class="btn" type="button">Like</a> <a href="#" class="btn" type="button">Dislike</a>
+									@endif
+                                                                         
+                                                                         <a href="#" class="btn" type="button">Show Comments</a>
 								</div>
 								<div class="col-md-1 column">
 									
@@ -286,51 +328,26 @@
 									 
 								</div>
 								<div class="col-md-4 column">
-								<a href="#" class="btn" type="button">Add Comment</a>
-									 <a href="#" class="btn" type="button">Save Message</a>
+                                                                    
+                                                                @if(Session::has('loggedinUser.email'))
+								<a href="#" class="btn" type="button" onclick="addComment( {{{$broadcastMessage->id}}} ); " >Add Comment</a>
+                                                                
+                                                                
+                                                                @if (isset($hideSaveMessage))
+                                                                
+                                                                @else                                                                
+									 <a href="#" class="btn" type="button" onclick="saveMessage({{{$broadcastMessage->id}}}); ">Save Message</a>
+                                                                @endif
+                                                                @endif
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="row clearfix">
-				<div class="col-md-3 column">
-				</div>
-				<div class="col-md-9 column message-wrapper">
-				
-				<div class="row clearfix">
-					<div class="col-md-2 column ">
-						<img class="img-thumbnail img-comment" alt="140x140" src="image/defaultprofile.jpg" >
-					</div>
-					<div class="col-md-10 column">
-						<div class="row clearfix">
-							<div class="col-md-12 column">
-								<div class="row clearfix">
-									<div class="col-md-9 column message-header">
-									<a href="#" class="comment-username">
-											Will </a>
-									<span >02 December 3014 at 12:02 a.m</span>
-									</div>
-									<div class="col-md-3 column">
-									
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row clearfix">
-							<div class="col-md-12 column message-text">
-								<span>
-									Sample text that is created for the testing purpose this text should be just above 200 characters to check that the div with the characters that takes more space how wil it look and what will happen in that case!!!
-								</span>
-							</div>
-						</div>
-					</div>
-					
-				</div>
-				</div>
-				
-			</div>
+			
+			@endforeach
+			@endif
 		</div>
 	</div>
 </div>

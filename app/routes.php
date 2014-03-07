@@ -11,11 +11,14 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('resistence');
-});
+//Route::get('/', function()
+//{
+//	return View::make('resistence');
+//});
 
+
+Route::get('/', 'DefaultController@defaultHandler');
+Route::get('saved', 'DefaultController@showSavedMesages');
 
 Route::controller('register', 'RegistrationController');
 Route::controller('message', 'MessageController');
