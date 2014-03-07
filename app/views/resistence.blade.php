@@ -201,6 +201,12 @@
 								}
 							}).done(function( data ) {
 								//alert('Message Saved successfully');
+								$('#infoMessage').show();
+								$('#infoMessage').text('Message Saved Successfully');
+								setTimeout(function(){
+									$('#infoMessage').hide();
+								}
+								,2000);
 							});
 			
 			
@@ -378,9 +384,16 @@
 			</nav>
 			
 		</div>
+			<div class="row clearfix">
+			<div class="col-md-12 column">
+				<div id="infoMessage" class="btn-warning"></div>
+			</div>
+			</div>
+		
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-2 column">
+			<ul class="nav nav-pills nav-stacked side-menu">
 			<ul class="nav nav-pills nav-stacked side-menu">
 				
 				@if(Session::has('loggedinUser.email'))
