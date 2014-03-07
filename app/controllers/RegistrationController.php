@@ -27,6 +27,7 @@ class RegistrationController extends BaseController {
             $user = new User;
             $user->firstname = 'Pranav';
             $user->lastname = 'Maniar';
+            $user->userrole=Input::get('rolename');
             $user->username = Input::get('username');
             $user->email = Input::get('email');
             $user->password = Hash::make(Input::get('password'));

@@ -5,6 +5,7 @@
   <title>The Resistence </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
+  
   <meta name="author" content="">
 
 	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
@@ -67,7 +68,15 @@
 							}
 						}).done(function( data ) {
 							//alert( "Data Saved: " + data );
+							
 							signUpForm.dialog( "close" );
+							
+							$('#infoMessage').show();
+								$('#infoMessage').text('You are successfully Registered !!!');
+								setTimeout(function(){
+									$('#infoMessage').hide();
+								}
+								,2000);
 						});
 					},
 					Cancel: function() {
@@ -233,6 +242,12 @@
 	
 			
 			
+		}
+		
+		
+		function closeComment(id){
+			var addCommentDiv = "#addcomment-"+id;
+			$(addCommentDiv).hide();
 		}
 		
 		function addComment(id){
@@ -463,7 +478,7 @@
 								<div class="col-md-5 column">
 									 
                                                          @if ($broadcastMessage->user->isleader == 0 )
-														 
+														 @if(Session::has('loggedinUser.email'))
 																		 <span id="messageapprove-{{{$broadcastMessage->id}}}"> {{{$broadcastMessage->like or '0'}}} </span>
 																		<a href="#">
                                                                         <img class="img-thumbnail img-approval"alt="approve" src="image/approve.png" onclick="approveMessage({{{$broadcastMessage->id}}})" >
@@ -472,7 +487,7 @@
 																	   <a href="#">
 																		<img class="img-thumbnail img-approval"alt="approve" src="image/reject.png"  onclick="rejectMessage({{{$broadcastMessage->id}}})">
 																		</a>
-																		
+														@endif			
 														@endif
                                                                          
                                                                          <a id="showcommentbtn-{{{$broadcastMessage->id}}}" href="#" class="btn" type="button" onclick="toggleComment({{{$broadcastMessage->id}}});">Show Comments</a>
@@ -552,10 +567,22 @@
 				<div class="col-md-9 column ">
 				
 				<div class="row clearfix">
+				
+					<div class="input-group">
+						  <input type="text" class="form-control" placeholder="Add Comment" name="comment" id = "addcommentinput-{{{$broadcastMessage->id}}}">
+						  <span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="addComment({{{$broadcastMessage->id}}})">Add Comment</button>
+						  </span>
+						  <span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="closeComment({{{$broadcastMessage->id}}})">X</button>
+						  </span>
+					</div>
+				
+				
 					<div>
 						
-							<input  style="width:80%;" placeholder="Add Comment" name="comment" type="text" id = "addcommentinput-{{{$broadcastMessage->id}}}">
-							<input type="button" value="Add Comment" onclick="addComment({{{$broadcastMessage->id}}})"></input> 
+							<!--<input  style="width:80%;" placeholder="Add Comment" name="comment" type="text" id = "addcommentinput-{{{$broadcastMessage->id}}}"> -->
+							<!-- <input type="button" value="Add Comment" onclick="addComment({{{$broadcastMessage->id}}})"></input> -->
 						
 					</div>
 				</div>
