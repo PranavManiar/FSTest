@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var socket = io.connect('http://localhost:3000/');
+    var socket = io.connect('http://128.199.216.224:3000/');
 
     //socket.on('connect', function(data){
     //    socket.emit('subscribe', {channel:'score.update'});
