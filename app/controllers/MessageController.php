@@ -19,6 +19,9 @@ class MessageController extends BaseController {
             $message->user()->associate($user);
             $message->save();
 
+            //$data = array("name"=> "Pranav");
+             Event::fire(UpdateMessageEventHandler::EVENT, $message);
+            
             return "Successfull";
         }else{
             return Response::make("Please sign in to the application", 403);
