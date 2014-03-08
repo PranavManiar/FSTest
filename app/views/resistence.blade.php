@@ -638,7 +638,7 @@
 	<script type="text/javascript">// <![CDATA[
             
 $(document).ready(function(){
-    var socket = io.connect('http://127.0.0.1:3000/');
+    var socket = io.connect('http://128.199.216.224:3000/');
 
     //socket.on('connect', function(data){
     //    socket.emit('subscribe', {channel:'score.update'});
