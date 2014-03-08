@@ -30,7 +30,7 @@ class DefaultController extends BaseController {
             $savedMessages = Message::with(array('user'))->whereHas('savedbyusers',function($q) use ($id){
                 
                 $q->where('user_id' , '=' ,$id);
-            })->get();
+            })->orderBy('created_at','desc')->get();
   
            
             return View::make('resistence', array(
